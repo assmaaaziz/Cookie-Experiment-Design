@@ -1,0 +1,236 @@
+---
+title: "project"
+format: html
+editor: visual
+---
+
+## Project Data
+
+```{r}
+#Load in data
+library(tidyverse)
+replication = c(rep(1, 12), rep(2, 12))
+butter_temp = rep(c(rep('room temp', 6), rep('melted', 6)), 2)
+baking_temp = rep(c(rep(c(350, 375), each = 3)), 2)
+baking_time = rep(c(10, 12, 15), 8)
+
+responses_cm = c(7.7, 8.4, 7.9, 7.5, 6.8, 7.1, 7.3, 7.8, 7.8, 6.7, 6.2, 5.9, 
+                 8.6, 8.9, 10.3, 8, 8.1, 8.8, 7.2, 7.8, 7.2, 6.4, 6.7, 6.8)
+
+responses_in = round(responses_cm/2.54, 2)
+
+cookies = data.frame(cookie_id = 1:24, replication = replication, 
+                     butter_temp = butter_temp, baking_temp_F = baking_temp, 
+                     baking_time_min = baking_time, 
+                     diameter_inch = responses_in)
+cookies$butter_temp = factor(cookies$butter_temp)
+cookies$baking_temp_F = factor(cookies$baking_temp_F)
+cookies$baking_time_min = factor(cookies$baking_time_min)
+head(cookies, 3)
+```
+
+## Treatment Assignment
+
+```{r}
+#Randomly assign treatments
+
+set.seed(100)
+treatments = c(rep(1:12, each = 1, times = 2))
+treatment_assignment = sample(treatments, replace = FALSE)
+treatment_assignment
+
+#Each index in our vector represents one of our dough balls. The value at that
+#index is the randomly assigned treatment combination.
+```
+
+## Visualizations and Summary Statistics
+
+```{r}
+summary(cookies)
+```
+
+## Main Effects
+
+### Butter Temperature
+
+```{r}
+#Main Effects
+
+#Figure A
+butter_temp_vs_resp = ggplot(cookies, aes(x = butter_temp, y = diameter_inch)) +
+  geom_boxplot() + labs(title = 'Butter Temperature vs Cookie Diameter', 
+                        x = 'Butter Temperature', y = 'Diameter (inches)')
+#butter_temp_vs_resp 
+```
+
+### Baking Temperature
+
+```{r}
+#Figure B
+
+baking_temp_vs_resp = ggplot(cookies, aes(x = baking_temp_F, y = diameter_inch)) +
+  geom_boxplot() + labs(title = 'Baking Temperature vs Cookie Diameter', 
+                        x = 'Baking Temperature (°F)', y = 'Diameter (inches)')
+#baking_temp_vs_resp
+```
+
+### Baking Time
+
+```{r}
+#Figure C
+baking_time_vs_resp = ggplot(cookies, aes(x = baking_time_min, 
+                                          y = diameter_inch)) + geom_boxplot() +
+  labs(title = 'Baking Time vs Cookie Diameter', x = 'Baking Time (min)',
+       y = 'Diameter (inches)')
+#baking_time_vs_resp
+```
+
+## Interaction Effects
+
+### 2-Way: Butter Temp and Baking Temp
+
+```{r}
+#Interaction plots
+#Figure D
+group_means <- cookies |>
+  group_by(butter_temp, baking_temp_F) |>
+  summarize(avg_diameter = mean(diameter_inch),
+            n = n())
+#group_means
+
+plot1 = ggplot(group_means, aes(x = butter_temp,
+                        y = avg_diameter,
+                        color = baking_temp_F,
+                        group = baking_temp_F)) +
+  geom_point(shape = 15, size = 4) +
+  geom_line(lwd = 2) +
+  theme_bw() + labs(title = 'Interaction of Baking Temp and Butter Temp',
+                    x = 'Butter Temperature', y = 'Avg Diameter (inch)')
+```
+
+### 2-Way: Butter Temp and Baking Time
+
+```{r}
+#Interaction plots
+#Figure F
+group_means <- cookies |>
+  group_by(butter_temp, baking_time_min) |>
+  summarize(avg_diameter = mean(diameter_inch),
+            n = n())
+#group_means
+
+plot2 = ggplot(group_means, aes(x = butter_temp,
+                        y = avg_diameter,
+                        color = baking_time_min,
+                        group = baking_time_min)) +
+  geom_point(shape = 15, size = 4) +
+  geom_line(lwd = 2) +
+  theme_bw() + labs(title = 'Interaction of Butter Temp and Baking Temp',
+                    x = 'Butter Temperature', y = 'Avg Diameter (inch)')
+```
+
+### 2-Way: Baking Temp and Baking Time
+
+```{r}
+#Interaction plots
+#Figure G
+
+group_means <- cookies |>
+  group_by(baking_temp_F, baking_time_min) |>
+  summarize(avg_diameter = mean(diameter_inch),
+            n = n())
+#group_means
+
+plot3 = ggplot(group_means, aes(x = baking_temp_F,
+                        y = avg_diameter,
+                        color = baking_time_min,
+                        group = baking_time_min)) +
+  geom_point(shape = 15, size = 4) +
+  geom_line(lwd = 2) +
+  theme_bw() + labs(title = 'Interaction of Baking Temp and Baking Time',
+                    x = 'Baking Temperature (°F)', y = 'Avg Diameter (inch)')
+
+```
+
+### 3-Way: Butter Temp, Baking Temp, Baking Time
+
+```{r}
+##Interaction plots
+#Figure E
+group_means <- cookies |>
+  group_by(butter_temp, baking_temp_F, baking_time_min) |>
+  summarize(avg_diameter = mean(diameter_inch),
+            n = n())
+#group_means
+
+plot4 = ggplot(group_means, aes(x = butter_temp,
+                        y = avg_diameter,
+                        color = baking_temp_F,
+                        group = baking_temp_F)) +
+  geom_point(shape = 15, size = 4) +
+  geom_line(lwd = 2) +
+  facet_wrap(vars(baking_time_min), labeller = label_both) +
+  theme_bw()
+```
+
+## ANOVA
+
+```{r}
+#ANOVA
+anova_model <- aov(diameter_inch ~ butter_temp*baking_temp_F*baking_time_min,
+                   data = cookies)
+anova_tbl = summary(anova_model)
+anova_tbl
+
+obs_f = anova_tbl[[1]]$`F value`[1:7]
+#obs_f
+```
+
+## Randomization-based Inference
+
+```{r}
+#Randomization-based Inference
+set.seed(100)
+shuffle_three_factor <- function(y, a, b, c) {
+  Y <- sample(y) # source of randomness
+
+  cookies <- data.frame(diameter_inch = Y,
+                      butter_temp = a,
+                      baking_temp_F = b,
+                      baking_time_min = c)
+  
+  anova_model <- aov(diameter_inch ~ butter_temp*baking_temp_F*baking_time_min,
+                     data = cookies)
+  anova_table <- summary(anova_model)
+  f_stats <- anova_table[[1]]$`F value`
+  f_stats[1:7]
+}
+
+
+null_stats <- replicate(500, shuffle_three_factor(cookies$diameter_inch,
+                                                  cookies$butter_temp,
+                                                  cookies$baking_temp_F,
+                                                  cookies$baking_time_min))
+
+
+null_butter_temp = null_stats[1, ]
+null_baking_temp = null_stats[2, ]     
+null_baking_time = null_stats[3, ]                  
+null_butter_baking_temp = null_stats[4, ]   
+null_butter_baking_time = null_stats[5, ]   
+null_baking_temp_time = null_stats[6, ]   
+null_butter_baking_temp_time = null_stats[7, ]
+
+p1 = mean(null_butter_temp > obs_f[1])
+p2 = mean(null_baking_temp > obs_f[2])
+p3 = mean(null_baking_time > obs_f[3])
+p4 = mean(null_butter_baking_temp > obs_f[4])
+p5 = mean(null_butter_baking_time > obs_f[5])
+p6 = mean(null_baking_temp_time > obs_f[6])
+p7 = mean(null_butter_baking_temp_time > obs_f[7])
+
+df = data.frame(p_butter_temp = p1, p_baking_temp = p2, p_baking_time = p3,
+                p_butter_baking_temp = p4, p_butter_baking_time = p5,
+                p_baking_temp_time = p6, p_butter_baking_temp_time = p7)
+df
+```

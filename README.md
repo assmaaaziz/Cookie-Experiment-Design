@@ -45,11 +45,12 @@ Randomization-based inference (500 permutations) for significance testing
 Model diagnostics for residual patterns and fit validation
 
 **Key Findings**
-Factor	p-value	Significant?
-Butter Temperature	0.002, Yes
-Oven Temperature	0.006, Yes
-Baking Time	0.706, No
-Interaction Terms	> 0.59, No
+
+Factor	             p-value	      Significant?
+Butter Temperature	  0.002,         Yes
+Oven Temperature	    0.006,         Yes
+Baking Time	          0.706,          No
+Interaction Terms	    > 0.59,         No
 
 The largest cookies occurred when using room-temperature butter and baking at 350°F.
 

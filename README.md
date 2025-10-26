@@ -46,15 +46,9 @@ Model diagnostics for residual patterns and fit validation
 
 **Key Findings**
 
-Factor	             p-value	      Significant?
-Butter Temperature	  0.002,         Yes
-Oven Temperature	    0.006,         Yes
-Baking Time	          0.706,          No
-Interaction Terms	    > 0.59,         No
+Butter temperature and oven temperature had statistically significant effects on cookie size, while baking time and interaction terms were not significant.
 
 The largest cookies occurred when using room-temperature butter and baking at 350°F.
-
-Baking time had no significant effect within the tested range.
 
 The model achieved an R² ≈ 0.71, showing strong explanatory power.
 

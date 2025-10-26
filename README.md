@@ -1,6 +1,6 @@
 ## Cookie Experiment Design
 
-A Factorial Analysis of How Baking Conditions Affect Cookie Size
+A factorial analysis of how baking conditions affect cookie size.
 
 **Overview**
 

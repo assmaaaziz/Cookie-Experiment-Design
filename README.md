@@ -34,8 +34,7 @@ Total Cookies Baked: 24
 
 All treatment combinations were randomized using R to minimize bias.
 
-**Analysis**
-Methods:
+**Analysis Methods**
 
 Data visualization with ggplot2 (boxplots, interaction plots)
 
